@@ -1,0 +1,163 @@
+/* ============================
+   IMPORTS
+   ============================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+/* ============================
+   RESET
+   ============================ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================
+   BASE
+   ============================ */
+
+:root {
+    --bg: #0f0e0e;
+    /* Very dark warm-black — not cold, not blue */
+    --text: #c8c8c2;
+    /* Warm off-white — easier to read than pure white */
+    --text-bright: #f0ede8;
+    /* Headings */
+    --text-dim: #666660;
+    /* Social links, very secondary */
+    --link: #8a8a82;
+    /* Company name links — muted but visible */
+    --link-hover: #f0ede8;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    background-color: var(--bg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    line-height: 1.8;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================
+   LAYOUT
+   ============================ */
+
+#content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 13vh 28px 12vh;
+}
+
+/* ============================
+   TYPOGRAPHY
+   ============================ */
+
+.title {
+    color: var(--text-bright);
+    font-size: 1.75rem;
+    /* 28px — confident but not huge */
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.25;
+    margin-bottom: 1.75rem;
+}
+
+.intro {
+    font-size: 0.975rem;
+    /* Slightly smaller — acts as a subtitle */
+    font-weight: 400;
+    color: #7a7a72;
+    /* More muted version of body text */
+    margin-bottom: 2.25rem;
+    letter-spacing: 0.01em;
+}
+
+p {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 1.6rem;
+    letter-spacing: -0.005em;
+}
+
+/* ============================
+   LINKS
+   ============================ */
+
+a {
+    text-decoration: none;
+    color: var(--link);
+    transition: color 0.18s ease;
+}
+
+a:hover {
+    color: var(--link-hover);
+}
+
+.highlight-link {
+    color: var(--link);
+    border-bottom: 1px solid rgba(138, 138, 130, 0.25);
+    padding-bottom: 0.5px;
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.highlight-link:hover {
+    color: var(--link-hover);
+    border-color: rgba(240, 237, 232, 0.4);
+}
+
+.highlight-text {
+    color: #9a9a92;
+}
+
+/* ============================
+   SOCIAL LINKS
+   ============================ */
+
+.social-links {
+    margin-top: 2.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.social-links a {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    border-bottom: none;
+    width: fit-content;
+    letter-spacing: 0.01em;
+}
+
+.social-links a:hover {
+    color: var(--text-bright);
+}
+
+/* ============================
+   RESPONSIVE — MOBILE FIRST
+   ============================ */
+
+@media (max-width: 640px) {
+    #content {
+        padding: 9vh 22px 9vh;
+    }
+
+    .title {
+        font-size: 1.45rem;
+    }
+
+    p {
+        font-size: 0.95rem;
+        line-height: 1.75;
+    }
+}
