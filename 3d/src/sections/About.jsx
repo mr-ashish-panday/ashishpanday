@@ -49,7 +49,7 @@ A small piece of my work ended up in one of the largest business series launches
       <div className="flex flex-col items-center justify-between gap-16 px-1 sm:px-1 md:px-3 lg:px-6 pb-16 text-xl font-light tracking-wide lg:flex-row md:text-2xl lg:text-3xl text-white/60 ultra-small-screen">
         <img
           ref={imgRef}
-          src="images/pfp.png"
+          src={`${import.meta.env.BASE_URL}images/pfp.png`}
           alt="Ashish Panday"
           className="w-md rounded-3xl"
         />

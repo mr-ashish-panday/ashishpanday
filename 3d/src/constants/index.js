@@ -1,4 +1,5 @@
 // index.js — Ashish Panday portfolio content
+const BASE = import.meta.env.BASE_URL;
 export const servicesData = [
   {
     title: "AI & ML Research",
@@ -96,8 +97,8 @@ export const projects = [
     description:
       "234 experiments on BERT-base proving LoRA eliminates catastrophic forgetting in continual learning. Submitted to TMLR.",
     href: "https://zenodo.org/search?q=creators.name%3A%22Pandey%2C+Ashish%22",
-    image: "/assets/projects/mobile-accessories-store.jpg",
-    bgImage: "/assets/backgrounds/blanket.jpg",
+    image: `${BASE}assets/projects/mobile-accessories-store.jpg`,
+    bgImage: `${BASE}assets/backgrounds/blanket.jpg`,
     frameworks: [
       { id: 1, name: "PyTorch" },
       { id: 2, name: "LoRA" },
@@ -111,8 +112,8 @@ export const projects = [
     description:
       "AI infrastructure for executives. End-to-end autonomous systems that handle complex workflows.",
     href: "#",
-    image: "/assets/projects/plant-shop.jpg",
-    bgImage: "/assets/backgrounds/curtains.jpg",
+    image: `${BASE}assets/projects/plant-shop.jpg`,
+    bgImage: `${BASE}assets/backgrounds/curtains.jpg`,
     frameworks: [
       { id: 1, name: "Python" },
       { id: 2, name: "LLMs" },
@@ -126,8 +127,8 @@ export const projects = [
     description:
       "Continuous training pipeline that ingests arXiv papers and fine-tunes models to stay current with research.",
     href: "https://github.com/mr-ashish-panday",
-    image: "/assets/projects/apple-tech-store.jpg",
-    bgImage: "/assets/backgrounds/map.jpg",
+    image: `${BASE}assets/projects/apple-tech-store.jpg`,
+    bgImage: `${BASE}assets/backgrounds/map.jpg`,
     frameworks: [
       { id: 1, name: "PyTorch" },
       { id: 2, name: "arXiv API" },
@@ -141,8 +142,8 @@ export const projects = [
     description:
       "Context-as-Weights research prototype — LoRA/PEFT adapters applied at runtime for dynamic context windows.",
     href: "https://github.com/mr-ashish-panday",
-    image: "/assets/projects/electronics-store.jpg",
-    bgImage: "/assets/backgrounds/poster.jpg",
+    image: `${BASE}assets/projects/electronics-store.jpg`,
+    bgImage: `${BASE}assets/backgrounds/poster.jpg`,
     frameworks: [
       { id: 1, name: "PyTorch" },
       { id: 2, name: "LoRA" },
@@ -156,8 +157,8 @@ export const projects = [
     description:
       "Built the entire go-to-market system for an Irish software company — enriching CEOs at natural health companies doing $1M–$10M via Clay and agentic workflows.",
     href: "https://essenceretention.com/",
-    image: "/assets/projects/home-decor-store.jpg",
-    bgImage: "/assets/backgrounds/table.jpg",
+    image: `${BASE}assets/projects/home-decor-store.jpg`,
+    bgImage: `${BASE}assets/backgrounds/table.jpg`,
     frameworks: [
       { id: 1, name: "Clay" },
       { id: 2, name: "Agentic Workflows" },
@@ -171,8 +172,8 @@ export const projects = [
     description:
       "Backend systems for creators with 5B+ (Carlos, YT Shorts) and 7B+ (Logan, TikTok) views. 100K+ followers and 120M+ views combined.",
     href: "#",
-    image: "/assets/projects/game-store.jpg",
-    bgImage: "/assets/backgrounds/curtains.jpg",
+    image: `${BASE}assets/projects/game-store.jpg`,
+    bgImage: `${BASE}assets/backgrounds/curtains.jpg`,
     frameworks: [
       { id: 1, name: "Content Strategy" },
       { id: 2, name: "Analytics" },
