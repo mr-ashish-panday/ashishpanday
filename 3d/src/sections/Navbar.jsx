@@ -107,7 +107,7 @@ const Navbar = () => {
     <>
       {/* Minimal View Toggle — top left */}
       <a
-        href="/static.html"
+        href="/"
         className="fixed z-[60] top-5 left-6 flex items-center gap-2 px-5 py-2.5 text-xs font-light tracking-widest uppercase bg-black/60 backdrop-blur-md text-white/80 rounded-full border border-white/20 hover:bg-black/80 hover:text-white transition-all duration-300"
         style={
           showBurger
