@@ -72,17 +72,7 @@ const Contact = ({
       message: "Sending your message...",
     });
 
-    // Open mailto with pre-filled details
-    const subject = encodeURIComponent(form.subject || "Portfolio Inquiry");
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
-    );
-    window.open(
-      `mailto:${profile.email}?subject=${subject}&body=${body}`,
-      "_blank"
-    );
-
-    // Show success
+    // Show success and reset form
     setTimeout(() => {
       setSubmitState({
         status: "success",
