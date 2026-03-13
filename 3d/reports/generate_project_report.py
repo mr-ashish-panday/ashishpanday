@@ -1,21 +1,25 @@
 from pathlib import Path
 
 from docx import Document
-from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt
 from reportlab.lib import colors
+from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
+    HRFlowable,
+    KeepTogether,
     ListFlowable,
     ListItem,
     PageBreak,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
+    Table,
+    TableStyle,
 )
 
 
@@ -23,6 +27,14 @@ TITLE = "3D Portfolio Website Project Report"
 AUTHOR = "Ashish Panday"
 PROJECT_TYPE = "Full-Stack Web Development Project"
 GENERATED_ON = "March 13, 2026"
+SUBTITLE = "Frontend, Backend, API Integration, and Deployment Support"
+LIVE_LINK = "https://ashishpanday.vercel.app/"
+ABSTRACT = (
+    "This report presents the design and development of a full-stack 3D portfolio "
+    "website that combines immersive frontend presentation with practical backend "
+    "features such as API routing, validation, contact form handling, storage, and "
+    "deployment support."
+)
 
 INTRO = [
     "This project is a modern full-stack personal portfolio website developed to present academic, technical, and research work in a visually engaging format. The application combines a 3D animated frontend with a functional backend, turning a static portfolio into a complete web application.",
@@ -76,11 +88,13 @@ TECH_STACK = [
 SYSTEM_OVERVIEW = [
     "The system is divided into two major parts: the frontend and the backend. The frontend is responsible for the visual presentation of the portfolio, while the backend handles data communication, API responses, validation, and message storage.",
     "The main frontend sections are Hero, About, Services, Works, Contact Summary, and Contact. The backend exposes routes such as /api/portfolio, /api/health, /api/messages, and /api/contact. The frontend communicates with these routes through HTTP requests.",
+    "The project also supports two presentation modes: a dynamic 3D React-based experience and a lightweight static HTML version. A visible toggle allows users to switch between the dynamic and static views, making the website flexible for both immersive presentation and minimal reading mode.",
 ]
 
 FRONTEND = [
     "The frontend was built using React and Vite, with Tailwind CSS for styling and GSAP for animations. Three.js through React Three Fiber and Drei was used to create the 3D visual experience in the Hero section.",
     "A smooth loading experience was implemented using useProgress from Drei, and scroll behavior was enhanced with Lenis. Different sections of the portfolio present the user's research profile, services, projects, and contact information in a responsive layout.",
+    "In addition to the animated 3D version, the project includes a static minimal page built with HTML and CSS. The main dynamic website provides a Minimal toggle, and the static page provides a 3D View toggle, so users can move back and forth between the two experiences.",
 ]
 
 FRONTEND_FEATURES = [
@@ -88,6 +102,7 @@ FRONTEND_FEATURES = [
     "Smooth transitions and scroll-based motion.",
     "Responsive layout across desktop and mobile devices.",
     "Dynamic services and works sections.",
+    "Dual presentation modes with toggle support between static and dynamic views.",
     "Interactive contact section with backend integration.",
     "Frontend fallback data when the backend is unavailable.",
 ]
@@ -200,6 +215,7 @@ def add_title_page(document: Document) -> None:
         ("Submitted By", AUTHOR),
         ("Project Type", PROJECT_TYPE),
         ("Generated On", GENERATED_ON),
+        ("Live Website", LIVE_LINK),
     ]:
         paragraph = document.add_paragraph()
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -287,14 +303,47 @@ def build_docx(output_path: Path) -> None:
 
 
 def build_pdf(output_path: Path) -> None:
+    primary = HexColor("#0f172a")
+    accent = HexColor("#2563eb")
+    muted = HexColor("#64748b")
+    border = HexColor("#cbd5e1")
+    soft_bg = HexColor("#f8fafc")
+    soft_accent = HexColor("#eff6ff")
+
     styles = getSampleStyleSheet()
     styles.add(
         ParagraphStyle(
             name="ReportTitle",
             parent=styles["Title"],
-            fontSize=20,
-            leading=26,
+            fontName="Helvetica-Bold",
+            fontSize=24,
+            leading=30,
             alignment=TA_CENTER,
+            textColor=primary,
+            spaceAfter=10,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="ReportKicker",
+            parent=styles["BodyText"],
+            fontName="Helvetica-Bold",
+            fontSize=11,
+            leading=14,
+            alignment=TA_CENTER,
+            textColor=accent,
+            spaceAfter=8,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="ReportSubtitle",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=11.5,
+            leading=16,
+            alignment=TA_CENTER,
+            textColor=muted,
             spaceAfter=18,
         )
     )
@@ -302,20 +351,22 @@ def build_pdf(output_path: Path) -> None:
         ParagraphStyle(
             name="ReportHeading",
             parent=styles["Heading1"],
-            fontSize=14,
-            leading=18,
-            textColor=colors.black,
+            fontName="Helvetica-Bold",
+            fontSize=15,
+            leading=20,
+            textColor=primary,
             spaceBefore=12,
-            spaceAfter=8,
+            spaceAfter=6,
         )
     )
     styles.add(
         ParagraphStyle(
             name="ReportSubHeading",
             parent=styles["Heading2"],
-            fontSize=11,
-            leading=14,
-            textColor=colors.black,
+            fontName="Helvetica-Bold",
+            fontSize=11.5,
+            leading=15,
+            textColor=accent,
             spaceBefore=8,
             spaceAfter=6,
         )
@@ -324,30 +375,60 @@ def build_pdf(output_path: Path) -> None:
         ParagraphStyle(
             name="ReportBody",
             parent=styles["BodyText"],
+            fontName="Times-Roman",
             fontSize=10.5,
-            leading=15,
+            leading=16,
             alignment=TA_JUSTIFY,
             spaceAfter=8,
+            textColor=primary,
         )
     )
     styles.add(
         ParagraphStyle(
             name="ReportMeta",
             parent=styles["BodyText"],
-            fontSize=11,
-            leading=16,
+            fontName="Helvetica",
+            fontSize=10.5,
+            leading=15,
             alignment=TA_CENTER,
-            spaceAfter=6,
+            textColor=primary,
+            spaceAfter=0,
         )
     )
     styles.add(
         ParagraphStyle(
             name="ReportBullet",
             parent=styles["BodyText"],
+            fontName="Times-Roman",
             fontSize=10.5,
-            leading=14,
+            leading=15,
             alignment=TA_LEFT,
-            leftIndent=16,
+            leftIndent=14,
+            textColor=primary,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="ReportSummary",
+            parent=styles["BodyText"],
+            fontName="Times-Roman",
+            fontSize=10.5,
+            leading=16,
+            alignment=TA_JUSTIFY,
+            textColor=primary,
+            spaceAfter=0,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="ReportLabel",
+            parent=styles["BodyText"],
+            fontName="Helvetica-Bold",
+            fontSize=9,
+            leading=12,
+            alignment=TA_LEFT,
+            textColor=muted,
+            uppercase=True,
         )
     )
 
@@ -361,15 +442,80 @@ def build_pdf(output_path: Path) -> None:
     )
     story = []
 
+    meta_table = Table(
+        [
+            ["SUBMITTED BY", AUTHOR],
+            ["PROJECT TYPE", PROJECT_TYPE],
+            ["GENERATED ON", GENERATED_ON],
+            ["LIVE WEBSITE", LIVE_LINK],
+        ],
+        colWidths=[1.7 * inch, 4.8 * inch],
+    )
+    meta_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), soft_bg),
+                ("BOX", (0, 0), (-1, -1), 0.8, border),
+                ("INNERGRID", (0, 0), (-1, -1), 0.5, border),
+                ("TEXTCOLOR", (0, 0), (0, -1), muted),
+                ("TEXTCOLOR", (1, 0), (1, -1), primary),
+                ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
+                ("FONTNAME", (1, 0), (1, -1), "Helvetica"),
+                ("FONTSIZE", (0, 0), (-1, -1), 10.5),
+                ("TOPPADDING", (0, 0), (-1, -1), 10),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+                ("LEFTPADDING", (0, 0), (-1, -1), 12),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]
+        )
+    )
+
+    summary_box = Table(
+        [[Paragraph(ABSTRACT, styles["ReportSummary"])]],
+        colWidths=[6.5 * inch],
+    )
+    summary_box.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), soft_accent),
+                ("BOX", (0, 0), (-1, -1), 0.8, accent),
+                ("TOPPADDING", (0, 0), (-1, -1), 12),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+                ("LEFTPADDING", (0, 0), (-1, -1), 14),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 14),
+            ]
+        )
+    )
+
+    story.append(Spacer(1, 1.4 * inch))
+    story.append(Paragraph("PROJECT REPORT", styles["ReportKicker"]))
     story.append(Paragraph(TITLE, styles["ReportTitle"]))
-    story.append(Spacer(1, 12))
-    story.append(Paragraph(f"Submitted By: {AUTHOR}", styles["ReportMeta"]))
-    story.append(Paragraph(f"Project Type: {PROJECT_TYPE}", styles["ReportMeta"]))
-    story.append(Paragraph(f"Generated On: {GENERATED_ON}", styles["ReportMeta"]))
+    story.append(Paragraph(SUBTITLE, styles["ReportSubtitle"]))
+    story.append(
+        HRFlowable(width="28%", thickness=1.4, color=accent, spaceBefore=2, spaceAfter=22)
+    )
+    story.append(meta_table)
+    story.append(Spacer(1, 0.45 * inch))
+    story.append(summary_box)
     story.append(PageBreak())
 
+    def section_heading(title):
+        return KeepTogether(
+            [
+                Paragraph(title, styles["ReportHeading"]),
+                HRFlowable(
+                    width="100%",
+                    thickness=0.8,
+                    color=border,
+                    spaceBefore=0,
+                    spaceAfter=10,
+                ),
+            ]
+        )
+
     def add_section(title, paragraphs=None, bullets=None):
-        story.append(Paragraph(title, styles["ReportHeading"]))
+        story.append(section_heading(title))
         if paragraphs:
             for text in paragraphs:
                 story.append(Paragraph(text, styles["ReportBody"]))
@@ -383,19 +529,50 @@ def build_pdf(output_path: Path) -> None:
                     bulletType="bullet",
                     start="circle",
                     leftIndent=12,
+                    bulletFontName="Helvetica",
+                    bulletFontSize=10,
+                    bulletColor=accent,
                 )
             )
             story.append(Spacer(1, 8))
 
+    abstract_box = Table(
+        [[Paragraph(ABSTRACT, styles["ReportSummary"])]],
+        colWidths=[6.5 * inch],
+    )
+    abstract_box.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), soft_bg),
+                ("BOX", (0, 0), (-1, -1), 0.8, border),
+                ("TOPPADDING", (0, 0), (-1, -1), 12),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+                ("LEFTPADDING", (0, 0), (-1, -1), 14),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 14),
+            ]
+        )
+    )
+    story.append(Paragraph("ABSTRACT", styles["ReportSubHeading"]))
+    story.append(abstract_box)
+    story.append(Spacer(1, 14))
+
     add_section("1. Introduction", paragraphs=INTRO)
     add_section("2. Objectives", bullets=OBJECTIVES)
 
-    story.append(Paragraph("3. Technologies Used", styles["ReportHeading"]))
+    story.append(section_heading("3. Technologies Used"))
     for heading, items in TECH_STACK:
         story.append(Paragraph(heading, styles["ReportSubHeading"]))
         flow_items = [ListItem(Paragraph(item, styles["ReportBullet"])) for item in items]
         story.append(
-            ListFlowable(flow_items, bulletType="bullet", start="circle", leftIndent=12)
+            ListFlowable(
+                flow_items,
+                bulletType="bullet",
+                start="circle",
+                leftIndent=12,
+                bulletFontName="Helvetica",
+                bulletFontSize=10,
+                bulletColor=accent,
+            )
         )
         story.append(Spacer(1, 8))
 
@@ -408,6 +585,9 @@ def build_pdf(output_path: Path) -> None:
             bulletType="bullet",
             start="circle",
             leftIndent=12,
+            bulletFontName="Helvetica",
+            bulletFontSize=10,
+            bulletColor=accent,
         )
     )
     story.append(Spacer(1, 8))
@@ -420,6 +600,9 @@ def build_pdf(output_path: Path) -> None:
             bulletType="bullet",
             start="circle",
             leftIndent=12,
+            bulletFontName="Helvetica",
+            bulletFontSize=10,
+            bulletColor=accent,
         )
     )
     story.append(Spacer(1, 8))
@@ -432,6 +615,9 @@ def build_pdf(output_path: Path) -> None:
             bulletType="bullet",
             start="circle",
             leftIndent=12,
+            bulletFontName="Helvetica",
+            bulletFontSize=10,
+            bulletColor=accent,
         )
     )
     story.append(Spacer(1, 8))
@@ -445,7 +631,31 @@ def build_pdf(output_path: Path) -> None:
     add_section("14. Future Improvements", bullets=FUTURE_IMPROVEMENTS)
     add_section("15. References", bullets=REFERENCES)
 
-    doc.build(story)
+    def draw_first_page(canvas, _doc):
+        canvas.saveState()
+        canvas.setStrokeColor(border)
+        canvas.setLineWidth(1)
+        canvas.line(0.85 * inch, 0.7 * inch, A4[0] - 0.85 * inch, 0.7 * inch)
+        canvas.setFillColor(muted)
+        canvas.setFont("Helvetica", 9)
+        canvas.drawCentredString(A4[0] / 2, 0.48 * inch, AUTHOR)
+        canvas.restoreState()
+
+    def draw_later_pages(canvas, _doc):
+        canvas.saveState()
+        canvas.setStrokeColor(border)
+        canvas.setLineWidth(0.7)
+        canvas.line(0.85 * inch, A4[1] - 0.6 * inch, A4[0] - 0.85 * inch, A4[1] - 0.6 * inch)
+        canvas.line(0.85 * inch, 0.6 * inch, A4[0] - 0.85 * inch, 0.6 * inch)
+        canvas.setFillColor(muted)
+        canvas.setFont("Helvetica", 9)
+        canvas.drawString(0.85 * inch, 0.38 * inch, TITLE)
+        canvas.drawRightString(
+            A4[0] - 0.85 * inch, 0.38 * inch, f"Page {canvas.getPageNumber() - 1}"
+        )
+        canvas.restoreState()
+
+    doc.build(story, onFirstPage=draw_first_page, onLaterPages=draw_later_pages)
 
 
 def main() -> None:
