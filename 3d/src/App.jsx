@@ -1,8 +1,7 @@
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactLenis from "lenis/react";
 import { useProgress } from "@react-three/drei";
 import { projects, servicesData, socials } from "./constants";
-import { fetchHealth, fetchPortfolio } from "./lib/api";
 import About from "./sections/About";
 import Contact from "./sections/Contact";
 import ContactSummary from "./sections/ContactSummary";
@@ -12,7 +11,7 @@ import Services from "./sections/Services";
 import ServiceSummary from "./sections/ServiceSummary";
 import Works from "./sections/Works";
 
-const fallbackPortfolio = {
+const portfolio = {
   profile: {
     name: "Ashish Panday",
     role: "AI researcher, builder, and systems-minded developer",
@@ -24,77 +23,35 @@ const fallbackPortfolio = {
 };
 
 const App = () => {
-  const { progress } = useProgress();
+  const { progress, active } = useProgress();
   const [isReady, setIsReady] = useState(false);
-  const [portfolio, setPortfolio] = useState(fallbackPortfolio);
-  const [backendStatus, setBackendStatus] = useState({
-    status: "checking",
-    submissions: 0,
-    checkedAt: null,
-    storageMode: "unknown",
-  });
 
+  // Mark ready when Three.js finishes loading OR after a fallback timeout
   useEffect(() => {
     if (progress === 100) {
       setIsReady(true);
     }
   }, [progress]);
 
+  // Fallback: if loading takes too long or useProgress never fires (cached model),
+  // dismiss the loading screen after 4 seconds
   useEffect(() => {
-    let ignore = false;
-
-    const loadPortfolio = async () => {
-      try {
-        const [portfolioResponse, healthResponse] = await Promise.all([
-          fetchPortfolio(),
-          fetchHealth(),
-        ]);
-
-        if (ignore) {
-          return;
-        }
-
-        startTransition(() => {
-          setPortfolio((current) => ({
-            ...current,
-            ...portfolioResponse,
-          }));
-          setBackendStatus({
-            status: "online",
-            submissions: healthResponse.submissions || 0,
-            checkedAt: healthResponse.checkedAt || null,
-            storageMode: healthResponse.storageMode || "unknown",
-          });
-        });
-      } catch {
-        if (!ignore) {
-          setBackendStatus({
-            status: "offline",
-            submissions: 0,
-            checkedAt: null,
-            storageMode: "unknown",
-          });
-        }
-      }
-    };
-
-    loadPortfolio();
-
-    return () => {
-      ignore = true;
-    };
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 4000);
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleMessageSaved = () => {
-    setBackendStatus((current) => ({
-      ...current,
-      status: "online",
-      submissions: current.submissions + 1,
-      checkedAt: new Date().toISOString(),
-      storageMode:
-        current.storageMode === "unknown" ? "local-file" : current.storageMode,
-    }));
-  };
+  // Also dismiss if the loader is not active and we haven't started
+  // (model already cached — useProgress never fires intermediate values)
+  useEffect(() => {
+    if (!active && progress === 0) {
+      const timer = setTimeout(() => {
+        setIsReady(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [active, progress]);
 
   return (
     <ReactLenis root className="relative w-screen min-h-screen overflow-x-hidden">
@@ -126,8 +83,6 @@ const App = () => {
         <Contact
           profile={portfolio.profile}
           socials={socials}
-          backendStatus={backendStatus}
-          onMessageSaved={handleMessageSaved}
         />
       </div>
     </ReactLenis>
