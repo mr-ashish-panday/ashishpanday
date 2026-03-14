@@ -105,24 +105,7 @@ const Navbar = () => {
   };
   return (
     <>
-      {/* Minimal View Toggle — top left */}
-      <a
-        href="/"
-        className="fixed z-[60] top-5 left-6 flex items-center gap-2 px-5 py-2.5 text-xs font-light tracking-widest uppercase bg-black/60 backdrop-blur-md text-white/80 rounded-full border border-white/20 hover:bg-black/80 hover:text-white transition-all duration-300"
-        style={
-          showBurger
-            ? { opacity: 1, transform: "translateY(0)" }
-            : { opacity: 0, transform: "translateY(-20px)", pointerEvents: "none" }
-        }
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-        </svg>
-        Minimal
-      </a>
+
 
       <nav
         ref={navRef}

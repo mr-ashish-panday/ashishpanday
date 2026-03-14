@@ -1,5 +1,5 @@
 // Build script for Vercel deployment
-// Copies static site to output/ and builds 3D React app to output/3d/
+// Builds 3D React app and outputs it as the main site
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -12,22 +12,6 @@ if (fs.existsSync(OUTPUT_DIR)) {
 }
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-// Copy static site files to output root
-const staticFiles = ['index.html', 'style.css', 'script.js', 'favicon.png'];
-staticFiles.forEach(file => {
-  const src = path.join(__dirname, file);
-  if (fs.existsSync(src)) {
-    fs.copyFileSync(src, path.join(OUTPUT_DIR, file));
-    console.log(`Copied ${file}`);
-  }
-});
-
-// Update the 3D toggle link in the output index.html to point to /3d/
-const indexPath = path.join(OUTPUT_DIR, 'index.html');
-let indexContent = fs.readFileSync(indexPath, 'utf8');
-indexContent = indexContent.replace('href="/3d/"', 'href="/3d/"'); // already correct
-fs.writeFileSync(indexPath, indexContent);
-
 // Build the 3D React app
 console.log('Building 3D site...');
 execSync('npm install && npm run build', {
@@ -35,10 +19,8 @@ execSync('npm install && npm run build', {
   stdio: 'inherit'
 });
 
-// Copy 3D build output to output/3d/
+// Copy 3D build output directly to output/ (root)
 const dist3d = path.join(__dirname, '3d', 'dist');
-const out3d = path.join(OUTPUT_DIR, '3d');
-fs.mkdirSync(out3d, { recursive: true });
 
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
@@ -53,7 +35,5 @@ function copyDir(src, dest) {
   }
 }
 
-copyDir(dist3d, out3d);
-console.log('Copied 3D build to output/3d/');
-
+copyDir(dist3d, OUTPUT_DIR);
 console.log('Build complete!');
