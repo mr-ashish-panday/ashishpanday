@@ -9,6 +9,13 @@ const messagesFile = new URL("../data/messages.json", import.meta.url);
 const messagesDir = path.dirname(fileURLToPath(messagesFile));
 const blobPrefix = "contact-messages/";
 
+const createBlobConfigError = (error) =>
+  new ApiError(
+    503,
+    "Blob storage failed. Connect a Private Blob store to this Vercel project, make sure BLOB_READ_WRITE_TOKEN points to it, and redeploy.",
+    error?.message ? { storage: error.message } : {}
+  );
+
 const readLocalMessages = async () => {
   try {
     const content = await fs.readFile(messagesFile, "utf8");
@@ -53,7 +60,13 @@ const blobPathForMessage = (message) => {
 };
 
 const parseBlobJson = async (pathname) => {
-  const blob = await get(pathname, { access: "private" });
+  let blob;
+
+  try {
+    blob = await get(pathname, { access: "private" });
+  } catch (error) {
+    throw createBlobConfigError(error);
+  }
 
   if (!blob || blob.statusCode !== 200 || !blob.stream) {
     return null;
@@ -79,16 +92,24 @@ export const listStoredMessages = async () => {
   const storageMode = getStorageMode();
 
   if (storageMode === "vercel-blob") {
-    const result = await list({ prefix: blobPrefix });
-    const orderedBlobs = [...result.blobs].sort((a, b) =>
-      b.pathname.localeCompare(a.pathname)
-    );
+    try {
+      const result = await list({ prefix: blobPrefix });
+      const orderedBlobs = [...result.blobs].sort((a, b) =>
+        b.pathname.localeCompare(a.pathname)
+      );
 
-    const messages = await Promise.all(
-      orderedBlobs.map((blob) => parseBlobJson(blob.pathname))
-    );
+      const messages = await Promise.all(
+        orderedBlobs.map((blob) => parseBlobJson(blob.pathname))
+      );
 
-    return messages.filter(Boolean);
+      return messages.filter(Boolean);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw createBlobConfigError(error);
+    }
   }
 
   if (storageMode === "missing-vercel-blob") {
@@ -102,11 +123,15 @@ export const saveStoredMessage = async (message) => {
   const storageMode = getStorageMode();
 
   if (storageMode === "vercel-blob") {
-    await put(blobPathForMessage(message), JSON.stringify(message, null, 2), {
-      access: "private",
-      addRandomSuffix: false,
-      contentType: "application/json",
-    });
+    try {
+      await put(blobPathForMessage(message), JSON.stringify(message, null, 2), {
+        access: "private",
+        addRandomSuffix: false,
+        contentType: "application/json",
+      });
+    } catch (error) {
+      throw createBlobConfigError(error);
+    }
     return;
   }
 
@@ -124,11 +149,15 @@ export const updateStoredMessage = async (message) => {
   const storageMode = getStorageMode();
 
   if (storageMode === "vercel-blob") {
-    await put(blobPathForMessage(message), JSON.stringify(message, null, 2), {
-      access: "private",
-      addRandomSuffix: false,
-      contentType: "application/json",
-    });
+    try {
+      await put(blobPathForMessage(message), JSON.stringify(message, null, 2), {
+        access: "private",
+        addRandomSuffix: false,
+        contentType: "application/json",
+      });
+    } catch (error) {
+      throw createBlobConfigError(error);
+    }
     return;
   }
 
