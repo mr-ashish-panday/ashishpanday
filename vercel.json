@@ -1,8 +1,9 @@
 {
-  "buildCommand": "node build.js",
+  "buildCommand": "node build.cjs",
   "outputDirectory": "output",
   "installCommand": "echo skip",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
