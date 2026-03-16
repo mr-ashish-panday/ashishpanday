@@ -1,10 +1,8 @@
 import { getPortfolioPayload } from "../3d/server/lib/api-service.js";
-import { handleApiError, jsonResponse, methodNotAllowed } from "./_utils.js";
+import { handleApiError, jsonResponse } from "./_utils.js";
 
-export default async function handler(request) {
-  if (request.method !== "GET") {
-    return methodNotAllowed("GET");
-  }
+export async function GET(request) {
+  void request;
 
   try {
     return jsonResponse(await getPortfolioPayload());

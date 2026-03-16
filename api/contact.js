@@ -1,11 +1,7 @@
 import { submitContactPayload } from "../3d/server/lib/api-service.js";
-import { handleApiError, jsonResponse, methodNotAllowed } from "./_utils.js";
+import { handleApiError, jsonResponse } from "./_utils.js";
 
-export default async function handler(request) {
-  if (request.method !== "POST") {
-    return methodNotAllowed("POST");
-  }
-
+export async function POST(request) {
   try {
     return jsonResponse(await submitContactPayload(await request.json()), 201);
   } catch (error) {
