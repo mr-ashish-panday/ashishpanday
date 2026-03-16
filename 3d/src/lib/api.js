@@ -25,7 +25,7 @@ const request = async (path, options = {}) => {
     });
   } catch {
     const error = new Error(
-      "Cannot reach the backend server. Start the project with npm run dev or check the deployed API."
+      "Cannot reach the backend server. Start the project with npm run dev or check the deployed API and email setup."
     );
     error.details = {};
     throw error;

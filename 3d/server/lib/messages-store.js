@@ -62,6 +62,19 @@ const parseBlobJson = async (pathname) => {
   return JSON.parse(await new Response(blob.stream).text());
 };
 
+const upsertLocalMessage = async (message) => {
+  const submissions = await readLocalMessages();
+  const index = submissions.findIndex((entry) => entry.id === message.id);
+
+  if (index >= 0) {
+    submissions[index] = message;
+  } else {
+    submissions.unshift(message);
+  }
+
+  await writeLocalMessages(submissions);
+};
+
 export const listStoredMessages = async () => {
   const storageMode = getStorageMode();
 
@@ -104,7 +117,27 @@ export const saveStoredMessage = async (message) => {
     );
   }
 
-  const submissions = await readLocalMessages();
-  submissions.unshift(message);
-  await writeLocalMessages(submissions);
+  await upsertLocalMessage(message);
+};
+
+export const updateStoredMessage = async (message) => {
+  const storageMode = getStorageMode();
+
+  if (storageMode === "vercel-blob") {
+    await put(blobPathForMessage(message), JSON.stringify(message, null, 2), {
+      access: "private",
+      addRandomSuffix: false,
+      contentType: "application/json",
+    });
+    return;
+  }
+
+  if (storageMode === "missing-vercel-blob") {
+    throw new ApiError(
+      503,
+      "Vercel Blob is not configured. Connect a Blob store in Vercel and redeploy."
+    );
+  }
+
+  await upsertLocalMessage(message);
 };

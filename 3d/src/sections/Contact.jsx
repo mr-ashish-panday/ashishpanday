@@ -4,7 +4,7 @@ import AnimatedHeaderSection from "../components/AnimatedHeaderSection";
 import Marquee from "../components/Marquee";
 import gsap from "gsap";
 import { socials as fallbackSocials } from "../constants";
-
+import { submitContactMessage } from "../lib/api";
 
 const initialForm = {
   name: "",
@@ -19,6 +19,12 @@ const Contact = ({
     location: "Kathmandu, Nepal",
   },
   socials = fallbackSocials,
+  backendStatus = {
+    status: "checking",
+    submissions: 0,
+    storageMode: "unknown",
+    emailMode: "unknown",
+  },
   onMessageSaved,
 }) => {
   const text = `Got a research question, project idea,
@@ -72,18 +78,48 @@ const Contact = ({
       message: "Sending your message...",
     });
 
-    // Show success and reset form
-    setTimeout(() => {
+    try {
+      const response = await submitContactMessage(form);
+      const referenceId = response.submission.id.slice(0, 8).toUpperCase();
+
       setSubmitState({
         status: "success",
-        message: "✓ Message sent!",
+        message: `${response.message} Ref: ${referenceId}`,
       });
       setFieldErrors({});
       setForm(initialForm);
-    }, 500);
+      onMessageSaved?.(response.submission);
+    } catch (error) {
+      setSubmitState({
+        status: "error",
+        message: error.message || "Unable to send your message right now.",
+      });
+      setFieldErrors(error.details || {});
+    }
   };
 
-
+  const backendLabel =
+    backendStatus.status === "online" &&
+    backendStatus.storageMode === "vercel-blob" &&
+    backendStatus.emailMode === "resend"
+      ? `Backend online - email alerts active, ${backendStatus.submissions} message${
+          backendStatus.submissions === 1 ? "" : "s"
+        } stored`
+      : backendStatus.status === "online" &&
+        backendStatus.emailMode === "missing-resend"
+      ? "Backend online - connect Resend before using the deployed contact form"
+      : backendStatus.status === "online" &&
+        backendStatus.storageMode === "missing-vercel-blob"
+      ? "Backend online - connect Vercel Blob before using the deployed contact form"
+      : backendStatus.status === "online"
+      ? `Backend online - local storage active, ${backendStatus.submissions} message${
+          backendStatus.submissions === 1 ? "" : "s"
+        } stored, email alerts ${
+          backendStatus.emailMode === "resend" ? "enabled" : "disabled"
+        }`
+      : backendStatus.status === "checking"
+      ? "Checking backend connection..."
+      : "Backend offline - running in frontend-only mode";
 
   return (
     <section
@@ -133,8 +169,13 @@ const Contact = ({
                 ))}
               </div>
             </div>
-
-
+            <div className="social-link">
+              <h2>Server</h2>
+              <div className="w-full h-px my-2 bg-white/30" />
+              <p className="text-base tracking-wide normal-case md:text-lg lg:text-xl text-white/80">
+                {backendLabel}
+              </p>
+            </div>
           </div>
 
           <form
@@ -251,7 +292,7 @@ const Contact = ({
                     : "text-white/60"
                 }`}
               >
-                {submitState.message}
+                {submitState.message || "Messages are saved by the backend API."}
               </p>
             </div>
           </form>

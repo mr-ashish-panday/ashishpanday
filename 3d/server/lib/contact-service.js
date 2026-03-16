@@ -27,6 +27,7 @@ export const validateMessage = (payload = {}) => {
 
 export const sanitizeMessage = (message) => ({
   id: randomUUID(),
+  status: "received",
   name: message.name.trim(),
   email: message.email.trim().toLowerCase(),
   subject: message.subject.trim(),
