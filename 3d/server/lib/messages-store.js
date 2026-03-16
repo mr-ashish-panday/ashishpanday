@@ -153,6 +153,7 @@ export const updateStoredMessage = async (message) => {
     try {
       await put(blobPathForMessage(message), JSON.stringify(message, null, 2), {
         access: "private",
+        allowOverwrite: true,
         addRandomSuffix: false,
         contentType: "application/json",
       });
