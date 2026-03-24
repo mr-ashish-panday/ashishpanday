@@ -3,6 +3,6 @@
   "outputDirectory": "output",
   "installCommand": "echo skip",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/3d/((?!assets/|models/|fonts/|images/).*)", "destination": "/3d/index.html" }
   ]
 }
