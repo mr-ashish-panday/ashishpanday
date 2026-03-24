@@ -162,8 +162,9 @@ a:hover {
     }
 
     .view-toggle {
-        top: 16px;
-        right: 16px;
+        position: static;
+        display: inline-flex;
+        margin: 16px 0 0 22px;
         padding: 7px 14px;
         font-size: 0.7rem;
     }
