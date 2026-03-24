@@ -163,16 +163,21 @@ a:hover {
 
     .view-toggle {
         position: fixed;
-        top: 16px;
-        right: 16px;
-        padding: 7px 14px;
-        font-size: 0.7rem;
+        top: 12px;
+        right: 12px;
+        padding: 6px 10px;
+        font-size: 0;
+        gap: 0;
         transition: opacity 0.25s ease, transform 0.25s ease;
     }
 
+    .view-toggle span {
+        display: none;
+    }
+
     .view-toggle svg {
-        width: 13px;
-        height: 13px;
+        width: 12px;
+        height: 12px;
     }
 }
 
