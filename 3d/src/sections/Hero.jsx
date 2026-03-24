@@ -35,7 +35,7 @@ while you sleep`;
       {/* Stats bar */}
       <div className="flex flex-wrap justify-start gap-8 md:gap-16 px-1 sm:px-1 md:px-3 lg:px-6 pb-10 ultra-small-screen">
         <div className="stat-item">
-          <p className="text-3xl md:text-5xl font-normal tracking-tight text-black">10</p>
+          <p className="text-3xl md:text-5xl font-normal tracking-tight text-black">11</p>
           <p className="text-xs md:text-sm uppercase tracking-widest text-black/40 mt-1">Research Papers</p>
         </div>
         <div className="stat-item">
